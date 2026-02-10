@@ -1,84 +1,137 @@
 import streamlit as st
 import time
 
-# Configuración de página
 st.set_page_config(page_title="Para Sury", page_icon="🌷", layout="centered")
 
-# Estilos CSS
+# Estilos CSS para construir el tulipán desde cero
 st.markdown("""
     <style>
     .stApp { background-color: #000000; }
     
-    .funda-ramo {
+    .container {
         display: flex;
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    .tulipan-svg {
-        width: 120px;
-        height: 160px;
-        margin: -20px; /* Para que se amontonen como un ramo */
-        opacity: 0;
-        animation: aparecer 1.5s ease-out forwards;
+        padding-top: 50px;
     }
 
-    @keyframes aparecer {
-        0% { transform: translateY(30px) scale(0); opacity: 0; }
+    /* Estructura del Tulipán */
+    .tulip {
+        position: relative;
+        width: 80px;
+        height: 180px;
+        margin: 10px;
+        animation: flowerGrow 1.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes flowerGrow {
+        0% { transform: translateY(50px) scale(0); opacity: 0; }
         100% { transform: translateY(0) scale(1); opacity: 1; }
     }
 
-    .texto-sury {
-        color: #FFB6C1;
-        font-family: 'Dancing Script', cursive;
-        font-size: 3.5rem;
+    /* Los Pétalos */
+    .petals {
+        position: relative;
+        width: 50px;
+        height: 60px;
+        margin: 0 auto;
+    }
+
+    .petal {
+        position: absolute;
+        width: 35px;
+        height: 55px;
+        border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+    }
+
+    .petal.main {
+        background: #ff4d6d;
+        left: 8px;
+        z-index: 2;
+    }
+
+    .petal.left {
+        background: #ff758f;
+        left: -5px;
+        transform: rotate(-25deg);
+        z-index: 1;
+    }
+
+    .petal.right {
+        background: #ff758f;
+        left: 20px;
+        transform: rotate(25deg);
+        z-index: 1;
+    }
+
+    /* El Tallo */
+    .stem {
+        width: 4px;
+        height: 100px;
+        background: #2d6a4f;
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+
+    /* La Hoja */
+    .leaf {
+        width: 30px;
+        height: 15px;
+        background: #40916c;
+        border-radius: 0 15px 0 15px;
+        position: absolute;
+        top: 100px;
+        left: 40px;
+        transform: rotate(-20deg);
+    }
+
+    .mensaje {
+        color: #ffb3c1;
+        font-family: 'Comic Sans MS', cursive;
+        font-size: 35px;
         text-align: center;
-        margin-top: 30px;
+        margin-top: 40px;
+        width: 100%;
         opacity: 0;
-        animation: fadeIn 3s ease-in forwards;
-        animation-delay: 5s;
+        animation: fadeIn 2s ease-in forwards;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; }
         to { opacity: 1; }
     }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     """, unsafe_allow_html=True)
 
-# El "dibujo" del tulipán en código SVG (líneas y curvas)
-def dibujo_tulipan(color_flor, delay):
-    svg = f"""
-    <svg class="tulipan-svg" style="animation-delay: {delay}s;" viewBox="0 0 100 150">
-        <path d="M50 150 Q55 100 50 60" stroke="#2D5A27" stroke-width="4" fill="none" />
-        <path d="M50 120 Q30 110 20 80 Q40 90 50 105" fill="#3B7A32" />
-        <path d="M50 60 Q30 60 25 35 Q40 15 50 40 Q60 15 75 35 Q70 60 50 60" fill="{color_flor}" />
-        <path d="M50 60 Q40 55 35 30 Q50 10 65 30 Q60 55 50 60" fill="{color_flor}" opacity="0.8" />
-    </svg>
+# Función para generar el HTML de un tulipán
+def crear_tulipan(delay):
+    return f"""
+    <div class="tulip" style="animation-delay: {delay}s;">
+        <div class="petals">
+            <div class="petal left"></div>
+            <div class="petal main"></div>
+            <div class="petal right"></div>
+        </div>
+        <div class="stem"></div>
+        <div class="leaf"></div>
+    </div>
     """
-    return svg
 
-# Colores para el ramo
-colores = ["#FF69B4", "#FF1493", "#FFC0CB", "#FF007F", "#DA70D6", "#BA55D3", "#FF69B4", "#FFB6C1"]
+# Título oculto para SEO de la página
+st.write("") 
 
-st.write("<div class='funda-ramo'>", unsafe_allow_html=True)
+# Espacio para el ramo
+ramo_placeholder = st.empty()
+html_ramo = "<div class='container'>"
 
-# Contenedor para ir mostrando los tulipanes
-placeholder = st.empty()
-html_acumulado = "<div class='funda-ramo'>"
-
-for i, color in enumerate(colores):
-    html_acumulado += dibujo_tulipan(color, i * 0.5)
-    placeholder.markdown(html_acumulado + "</div>", unsafe_allow_html=True)
-    time.sleep(0.5)
+# Generar 9 tulipanes para el ramo
+for i in range(9):
+    html_ramo += crear_tulipan(i * 0.4)
+    ramo_placeholder.markdown(html_ramo + "</div>", unsafe_allow_html=True)
+    time.sleep(0.4)
 
 # Mensaje final
-st.markdown("<div class='texto-sury'>Te quiero mucho mi Sury Hermosa</div>", unsafe_allow_html=True)
+st.markdown("<div class='mensaje' style='animation-delay: 4s;'>Te quiero mucho mi Sury Hermosa</div>", unsafe_allow_html=True)
 
-# Globos finales
-if i == len(colores) - 1:
-    st.balloons()
+st.balloons()
